@@ -5,7 +5,7 @@
 
 ## 当前状态
 
-- **当前任务**：T02
+- **当前任务**：T03
 - **当前分支**：`dev/demo`
 - **最近检查点**：C1 计划批准（2026-10-31）
 - **下一个停点**：T04 强推前确认
@@ -23,7 +23,7 @@
 
 ### 第 1 周
 - [x] T01 备份旧仓库并初始化本地仓库
-- [ ] T02 创建 Unity 项目并完成基础设置
+- [x] T02 创建 Unity 项目并完成基础设置
 - [ ] T03 搭建自动化测试脚手架（基线）
 - [ ] T04 强制推送覆盖 paperblade（高风险确认）
 - [ ] T05 登记 Gemini 参考图并校验清单 → C2
@@ -83,6 +83,13 @@
 | --- | --- | --- |
 | 旧仓库备份校验 | `git init -q <空目录> && git -C <空目录> bundle verify E:/Backups/paperblade/paperblade-<日期>.bundle`；`git -C E:/Backups/paperblade/paperblade-mirror.git lfs fsck` | T01 |
 | 旧仓库恢复 | `git clone file:///E:/Backups/paperblade/paperblade-mirror.git <目录>`（带 LFS 内容；只用 bundle 克隆会因缺 LFS 对象而检出失败） | T01 |
+| 项目初始化（幂等） | `"E:/Unity/6000.6.6f1/Editor/Unity.exe" -batchmode -projectPath E:/MYGAME/opus_work/BingZhong -executeMethod BingZhong.EditorTools.ProjectBootstrap.Apply -quit -logFile build/logs/T02-bootstrap.log`（编辑器开着同一项目时 batchmode 会失败，先 `unity close`） | T02 |
+| 渲染 Boot 场景截图 | 同上，`-executeMethod BingZhong.EditorTools.ProjectBootstrap.CaptureBoot -captureOut <png> -captureWidth 1920 -captureHeight 1080` | T02 |
+| 像素网格检查 | `python tools/art/check_pixel_grid.py <png> --scale 4 --background 141B33 [--palette ...]` | T02 |
+| 打开/查看/关闭编辑器 | `unity open E:/MYGAME/opus_work/BingZhong`；`unity status`；`unity close E:/MYGAME/opus_work/BingZhong` | T02 |
+| 驱动编辑器（Pipeline） | `unity list`（166 个工具）；`unity command eval --timeout 60 -- --code '<C#>'`；`unity command console get --tail 50 --level error` | T02 |
+| 编辑器内编译检查 | `unity recompile --project-path E:/MYGAME/opus_work/BingZhong --timeout 180` | T02 |
+| 项目级 MCP | `.mcp.json`：`unity mcp --project-path E:/MYGAME/opus_work/BingZhong`（新会话启动时需要你同意启用项目 MCP） | T02 |
 
 ## 环境与版本
 
@@ -93,6 +100,9 @@
 | Blender | 5.2.2 LTS，`E:\Tools\blender-5.2.2-windows-x64\blender.exe`，内置 Python 3.13.13、numpy 2.3.4 |
 | Python（工具脚本） | 3.13.14，Pillow 12.3.0，numpy 2.5.1 |
 | Git / LFS | 2.54.0.windows.1 / 3.7.1 |
+| Unity 包（packages-lock） | URP 17.6.0、2D Animation 16.0.1、2D Tilemap 1.0.0、Tilemap Extras 9.0.1、Input System 1.20.0、Cinemachine 6.6.0（Unity 6.6 内置）、Test Framework 1.8.0、Timeline 6.6.0、Pipeline 0.9.1-exp.1、uGUI 2.6.0 |
+| 项目设置 | 产品名"兵冢"、公司 bernard、版本 0.1.0、Mono、1920×1080 全屏窗口、Input System only、MSAA 关、ForceText、新脚本 LF、**保留域重载**（关闭 Enter Play Mode Options） |
+| 像素规格 | `BingZhong.Core.PixelSpec`：480×270、PPU 16、正交 size 8.4375；Boot 场景 PixelPerfectCamera：UpscaleRenderTexture、Windowbox、Point 滤波 |
 
 ## 消耗记录（每个里程碑汇报）
 
@@ -111,6 +121,7 @@
 （每完成一个任务记一行：`[TASK-Txx] 完成 | 验收输出摘要`）
 
 - [TASK-T01] 完成 | 远程仅 refs/heads/main=2299c8b8（6 个提交）；bundle `E:/Backups/paperblade/paperblade-20261031.bundle` 在空仓库中 verify 通过（complete history）；mirror `lfs fetch --all` 305 个对象、`lfs fsck` OK；从 mirror 克隆恢复 331 个 LFS 文件全部为真实内容；SHA256SUMS.txt 306 行；新仓库 34 条 LFS 规则，main 首个提交，dev/demo 已创建
+- [TASK-T02] 完成 | 0 error CS（batchmode 日志与 `unity recompile` 均为 0）；packages-lock 11 个必需包全部存在；1080p 截图 `check_pixel_grid --scale 4` PASS（1024 块 0 坏块、0 调色板外颜色）；E3：`unity list` 166 个工具、`command eval` 只读查询成功；`.mcp.json` 已写入
 
 ## 失败尝试记录
 
