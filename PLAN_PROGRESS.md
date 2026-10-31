@@ -5,7 +5,7 @@
 
 ## 当前状态
 
-- **当前任务**：T03
+- **当前任务**：T04（等待你确认强推）；T05 脚本部分可并行
 - **当前分支**：`dev/demo`
 - **最近检查点**：C1 计划批准（2026-10-31）
 - **下一个停点**：T04 强推前确认
@@ -24,7 +24,7 @@
 ### 第 1 周
 - [x] T01 备份旧仓库并初始化本地仓库
 - [x] T02 创建 Unity 项目并完成基础设置
-- [ ] T03 搭建自动化测试脚手架（基线）
+- [x] T03 搭建自动化测试脚手架（基线）
 - [ ] T04 强制推送覆盖 paperblade（高风险确认）
 - [ ] T05 登记 Gemini 参考图并校验清单 → C2
 
@@ -90,6 +90,11 @@
 | 驱动编辑器（Pipeline） | `unity list`（166 个工具）；`unity command eval --timeout 60 -- --code '<C#>'`；`unity command console get --tail 50 --level error` | T02 |
 | 编辑器内编译检查 | `unity recompile --project-path E:/MYGAME/opus_work/BingZhong --timeout 180` | T02 |
 | 项目级 MCP | `.mcp.json`：`unity mcp --project-path E:/MYGAME/opus_work/BingZhong`（新会话启动时需要你同意启用项目 MCP） | T02 |
+| **Unity 测试（标准入口）** | `bash tools/ci/run_tests.sh [EditMode\|PlayMode\|all] [--filter <模式>] [--min-total N]`；编辑器关着时走 `unity test`（NUnit XML → `build/test-results/<Mode>.xml`），开着时走 Pipeline（JSON → `build/test-results/<Mode>.json`，PlayMode 异步加轮询）；`BZ_TEST_BACKEND=batch\|editor` 可强制指定 | T03 |
+| 测试结果判定 | `python tools/ci/test_results.py <xml或json> [--min-total N]`：总数为 0、有失败、Pipeline `success=false` 都判失败（Pipeline CLI 在 `success=false` 时退出码仍为 0，不能只看退出码） | T03 |
+| 编译检查 | `bash tools/ci/compile_check.sh`（编辑器开着 → `unity recompile`；关着 → batchmode 并统计 `error CS`） | T03 |
+| Python 工具测试 | `bash tools/ci/run_python_tests.sh` | T03 |
+| 打包（占位） | `bash tools/ci/build_windows.sh`（T40 前固定返回 3） | T03 |
 
 ## 环境与版本
 
@@ -103,6 +108,17 @@
 | Unity 包（packages-lock） | URP 17.6.0、2D Animation 16.0.1、2D Tilemap 1.0.0、Tilemap Extras 9.0.1、Input System 1.20.0、Cinemachine 6.6.0（Unity 6.6 内置）、Test Framework 1.8.0、Timeline 6.6.0、Pipeline 0.9.1-exp.1、uGUI 2.6.0 |
 | 项目设置 | 产品名"兵冢"、公司 bernard、版本 0.1.0、Mono、1920×1080 全屏窗口、Input System only、MSAA 关、ForceText、新脚本 LF、**保留域重载**（关闭 Enter Play Mode Options） |
 | 像素规格 | `BingZhong.Core.PixelSpec`：480×270、PPU 16、正交 size 8.4375；Boot 场景 PixelPerfectCamera：UpscaleRenderTexture、Windowbox、Point 滤波 |
+
+## 基线（T03，2026-10-31）
+
+| 套件 | 结果 | 命令 |
+| --- | --- | --- |
+| Unity EditMode | 10/10 通过 | `bash tools/ci/run_tests.sh EditMode`（batch 与 editor 两种后端都验证过） |
+| Unity PlayMode | 9/9 通过（含 1080p ×4、4K ×8 像素网格渲染检查，30/60/144 帧步长矩阵样板） | `bash tools/ci/run_tests.sh PlayMode` |
+| Python 工具 | 15/15 通过 | `bash tools/ci/run_python_tests.sh` |
+| 编译 | 0 个 `error CS` | `bash tools/ci/compile_check.sh` |
+
+之后每个任务都不能让以上已有测试变成失败。
 
 ## 消耗记录（每个里程碑汇报）
 
@@ -122,6 +138,7 @@
 
 - [TASK-T01] 完成 | 远程仅 refs/heads/main=2299c8b8（6 个提交）；bundle `E:/Backups/paperblade/paperblade-20261031.bundle` 在空仓库中 verify 通过（complete history）；mirror `lfs fetch --all` 305 个对象、`lfs fsck` OK；从 mirror 克隆恢复 331 个 LFS 文件全部为真实内容；SHA256SUMS.txt 306 行；新仓库 34 条 LFS 规则，main 首个提交，dev/demo 已创建
 - [TASK-T02] 完成 | 0 error CS（batchmode 日志与 `unity recompile` 均为 0）；packages-lock 11 个必需包全部存在；1080p 截图 `check_pixel_grid --scale 4` PASS（1024 块 0 坏块、0 调色板外颜色）；E3：`unity list` 166 个工具、`command eval` 只读查询成功；`.mcp.json` 已写入
+- [TASK-T03] 完成 | `run_tests.sh all`：editor 后端 EditMode 10/10、PlayMode 9/9（20 秒）；batch 后端同样 10/10、9/9 并生成两个 NUnit XML（36 秒）；负例（临时加入必败测试）→ exit 1 并打印失败信息，探针已删除；`run_python_tests.sh` 15/15；`compile_check.sh` editor/batch 两条路径均 exit 0
 
 ## 失败尝试记录
 
