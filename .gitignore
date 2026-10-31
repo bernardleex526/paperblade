@@ -1,0 +1,63 @@
+# ---- Unity（项目目录 BingZhong/） ----
+/BingZhong/[Ll]ibrary/
+/BingZhong/[Tt]emp/
+/BingZhong/[Oo]bj/
+/BingZhong/[Bb]uild/
+/BingZhong/[Bb]uilds/
+/BingZhong/[Ll]ogs/
+/BingZhong/[Uu]ser[Ss]ettings/
+/BingZhong/[Mm]emoryCaptures/
+/BingZhong/[Rr]ecordings/
+/BingZhong/Assets/Plugins/Editor/JetBrains*
+/BingZhong/Assets/Plugins/Editor/JetBrains*.meta
+/BingZhong/test-results.xml
+/BingZhong/CodeCoverage/
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+crashlytics-build.properties
+.vs/
+.vscode/
+.idea/
+.gradle/
+.consulo/
+
+# ---- Blender ----
+*.blend1
+*.blend2
+*.blend@
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# ---- 项目产物（可重建） ----
+/build/
+/Builds/
+/test-results.xml
+
+# ---- Claude Code 本地设置 ----
+.claude/settings.local.json
+
+# ---- 系统 ----
+Thumbs.db
+Desktop.ini
+.DS_Store

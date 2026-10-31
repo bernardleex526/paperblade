@@ -1,0 +1,4 @@
+# 工具脚本（tools/art、tools/tests）使用系统 Python 3.13。
+# Blender 内的脚本（tools/blender）使用 Blender 自带的 Python，不依赖本文件。
+Pillow>=12.0
+numpy>=2.0
